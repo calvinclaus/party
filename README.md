@@ -7,12 +7,16 @@ Makes your terminal party.
 
 `gem install consoleparty`
 
+For help run: 
 `$ party -h`
 
+Simple party:
 `$ party`
 
+Silent party:
 `$ party --silent`
 
+Party with farewell and custom MC sequence
 `$ party -farewell "bye bye" "yo" "let's go" "yo"`
 
 ## Contributing
