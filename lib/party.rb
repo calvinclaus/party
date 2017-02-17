@@ -88,9 +88,10 @@ class Party
 
     saying = Thread.new {
       i = 0
+      words = stuff_to_say.cycle
       while !silent
         talking.synchronize{
-          %x[say "#{stuff_to_say[i % (stuff_to_say.length) ]}" ];
+          system "say", words.next
         }
         i+=1
       end
@@ -138,7 +139,7 @@ class Party
     if (!silent)
       talking.synchronize {
         if farewell 
-          %x(say #{farewell} );
+          system "say", farewell
         end
       }
     end
