@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["calvinclaus@me.com"]
 
   spec.summary       = %q{Makes your terminal party.}
-  spec.homepage      = "http://github.com/calvinclaus"
+  spec.homepage      = "https://github.com/calvinclaus/party"
   spec.license       = "MIT"
 
 

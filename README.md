@@ -1,6 +1,8 @@
 # Party
 Makes your terminal party. 
 
+On OSX it also features an MC using 'say'.
+
 ![funny img](http://i.giphy.com/gpivFuK6iE3hS.gif)
 
 ## Usage
