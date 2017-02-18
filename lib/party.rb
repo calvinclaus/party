@@ -1,31 +1,36 @@
 require 'curses'
 require 'getoptlong'
+def help_and_exit
+  puts <<~EOF
+      party [--silent] [-f "farewell"] [-w "words" -w "in" -w "rectangle"...] ["Things", "To", "Say"]
+
+      -h, --help:
+        show help
+
+      -f [greeting], --farewell [greeting]:
+        says greeting at the end, or "I had a great time" by default
+
+      -s, --silent:
+        start a silent party (without MC)
+        EOF
+    exit()
+end
 
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--farewell', '-f', GetoptLong::OPTIONAL_ARGUMENT ],
-  [ '--silent', '-s',  GetoptLong::OPTIONAL_ARGUMENT ]
+  [ '--silent', '-s',  GetoptLong::OPTIONAL_ARGUMENT ],
+  [ '--written', '-w',  GetoptLong::OPTIONAL_ARGUMENT ]
 )
 
 silent = false
 farewell = false
 stuff_to_say = ["Party", "Wo-hoo", "Party", "Yeah"]
+written_words = []
 opts.each do |opt, arg|
   case opt
   when '--help'
-    puts <<~EOF
-    party [--silent] ... ["Things", "To", "Say"]
-
-    -h, --help:
-      show help
-
-    -f [greeting], --farewell [greeting]:
-      says greeting at the end, or "I had a great time" by default
-
-    -s, --silent:
-      start a silent party (without MC)
-    EOF
-    exit()
+    help_and_exit()
   when '--farewell'
     if arg == ''
       farewell = "Ei häd äh Grad Tim"
@@ -34,7 +39,18 @@ opts.each do |opt, arg|
     end
   when '--silent'
     silent = true
+  when '--written'
+    if arg == ''
+      puts "-w must be followed by an argument"
+      help_and_exit()
+      exit();
+    end
+    written_words.push(arg)
   end
+end
+
+unless written_words.length > 0
+  written_words = ["Party", "Wohoo"]
 end
 
 if ARGV.length != 0
@@ -45,7 +61,7 @@ end
 include Curses
 class Party
 
-  def self.start(silent, farewell, stuff_to_say)
+  def self.start(written_words, silent, farewell, stuff_to_say)
     interrupted = false
     cols = (%x( tput cols )).to_i
     lines = (%x( tput lines )).to_i
@@ -68,14 +84,17 @@ class Party
       delta = 1
       while !interrupted
         sleep_time = (1.0/i.to_f)*1.3
-        sem.synchronize {
-          draw_rect(rec_left_x,rec_left_y,rec_width,rec_height, color_pair((i+3)%5), color_pair((i+3)%5), "PARTY")
-        }
-        sleep(sleep_time)
-        sem.synchronize {
-          draw_rect(rec_left_x,rec_left_y,rec_width,rec_height, color_pair(1), color_pair(1), "WOHOO")
-        }
-        sleep(sleep_time)
+        written_words.each.with_index do |word, w_i|
+          sem.synchronize {
+            if w_i % 2 == 0
+              draw_rect(rec_left_x,rec_left_y,rec_width,rec_height, color_pair((i+3)%5), color_pair((i+3)%5), word)
+            else
+              draw_rect(rec_left_x,rec_left_y,rec_width,rec_height, color_pair(1), color_pair(1), word)
+            end
+          }
+          sleep(sleep_time)
+        end
+
         i+=delta
         if i == 10 
           delta = -1
@@ -166,11 +185,17 @@ class Party
 
     for j in 0..h-2
       setpos(leftY+1+j, leftX+2)
-      for o in 1..(l-4)/string.length
-        addstr(string)
-      end
+      addstr(word_snake(string, l-4))
     end
     refresh
+  end
+
+  def self.word_snake(string, length)
+    s = ""
+    for _ in 0..(length/string.length)
+      s += string
+    end
+    s[0..(length-1)]
   end
 
 
@@ -206,4 +231,5 @@ class Party
   end
 end
 
-Party.start(silent, farewell, stuff_to_say)
+Party.start(written_words, silent, farewell, stuff_to_say)
+

@@ -5,6 +5,10 @@ On OSX it also features an MC using 'say'.
 
 ![funny img](http://i.giphy.com/gpivFuK6iE3hS.gif)
 
+## Demo
+
+<img src="http://excludify.com/party/party.gif" width="450"/>
+
 ## Usage
 
 `gem install consoleparty`
@@ -19,7 +23,10 @@ Silent party:
 `$ party --silent`
 
 Party with farewell and custom MC sequence
-`$ party -farewell "bye bye" "yo" "let's go" "yo"`
+```$ party -farewell "bye bye" "yo" "let's go" "yo"```
+
+Party with custom flashing text in rectangle (each -w option adds a word).
+```$ party -w custom -w word -w sequence```
 
 ## Contributing
 
